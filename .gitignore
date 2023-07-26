@@ -1,0 +1,10 @@
+
+
+# Test files
+/main.lua
+/conf.lua
+test/
+*.tiled-project
+*.tiled-session
+*.tsx
+*.tmx
