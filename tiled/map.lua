@@ -1,7 +1,5 @@
 local path = (...):gsub("tiled.map$", "")
-local tileset = require(path .. "tiled.tileset")
-local ecs = require(path .. "ecs")
-
+local tileset = require(path .. ".tiled.tileset")
 
 local constructors = {}
 
@@ -66,6 +64,10 @@ ecs.newComponent("imageLayer", imageLayer)
 
 
 local map = {}
+
+function map.getConstructors()
+  return constructors
+end
 
 local neighborDirections = {
   {  0,  1 },

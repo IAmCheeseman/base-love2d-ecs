@@ -1,8 +1,8 @@
 -- Game library
 -- GameMaker Studio/Entity Component System cross
 
-local path = (...):gsub("init$", "")
-local Event = require(path .. "event")
+local path = (...):gsub("init$", ".")
+local Event = require(path .. ".event")
 
 BACKGROUND_ZINDEX_FAR = -3
 BACKGROUND_ZINDEX_MID = -2
@@ -27,20 +27,21 @@ local function callIfNotNil(func, ...)
 end
 
 local core = {}
-core.vector = require(path .. "vector")
-core.ecs = require(path .. "ecs")
-core.viewport = require(path .. "viewport")
-core.time = require(path .. "time")
-core.Timer = core.time.Timer
-addAll(core, require(path .. "mathfuncs"))
-require(path .. "components.transform")
-require(path .. "components.animatedsprite")
-require(path .. "components.movement")
-require(path .. "components.softcollision")
-require(path .. "components.staticcollision")
-require(path .. "components.kinematicbody")
-require(path .. "components.areacollision")
-require(path .. "components.aabb")
+vector = require(path .. ".vector")
+ecs = require(path .. ".ecs")
+viewport = require(path .. ".viewport")
+time = require(path .. ".time")
+Timer = time.Timer
+collisions = require(path .. ".collisions")
+addAll(core, require(path .. ".mathfuncs"))
+require(path .. ".components.transform")
+require(path .. ".components.animatedsprite")
+require(path .. ".components.movement")
+require(path .. ".components.softcollision")
+require(path .. ".components.staticcollision")
+require(path .. ".components.kinematicbody")
+require(path .. ".components.areacollision")
+require(path .. ".components.aabb")
 
 core.keyPressed = Event()
 core.keyReleased = Event()
@@ -60,19 +61,19 @@ function love.keyreleased(key, scancode)
 end
 
 function love.mousemoved(_, _, _, _, _)
-  local mx, my = core.viewport.getMousePosition()
+  local mx, my = viewport.getMousePosition()
   core.mouseMoved:emit(mx, my)
   callIfNotNil(core.onMouseMoved, mx, my)
 end
 
 function love.mousepressed(_, _, button, _, _)
-  local mx, my = core.viewport.getMousePosition()
+  local mx, my = viewport.getMousePosition()
   core.mousePressed:emit(mx, my, button)
   callIfNotNil(core.onMousePressed, mx, my, button)
 end
 
 function love.mousereleased(_, _, button, _, _)
-  local mx, my = core.viewport.getMousePosition()
+  local mx, my = viewport.getMousePosition()
   core.mouseReleased:emit(mx, my, button)
   callIfNotNil(core.onMouseReleased, mx, my, button)
 end
@@ -87,12 +88,12 @@ function love.load()
 end
 
 function love.update(dt)
-  core.time.update(dt)
+  time.update(dt)
 
-  core.ecs.flushQueues()
+  ecs.flushQueues()
   callIfNotNil(core.update, dt)
 
-  local entities = core.ecs.getEntities()
+  local entities = ecs.getEntities()
   for _, entity in ipairs(entities) do
     for _, component in ipairs(entity._updates) do
       component:update(dt)
@@ -101,17 +102,17 @@ function love.update(dt)
 end
 
 function love.draw()
-  love.graphics.setCanvas(core.viewport.canvas)
-  love.graphics.clear(0.2, 0.2, 0.2)
+  love.graphics.setCanvas(viewport.canvas)
+  love.graphics.clear(0, 0, 0)
   
-  local vx, vy = core.viewport.getViewportPosition()
+  local vx, vy = viewport.getViewportPosition()
   vx = math.floor(vx)
   vy = math.floor(vy)
   love.graphics.translate(-vx, -vy)
 
   callIfNotNil(core.draw)
   
-  local entities = core.ecs.getEntities() 
+  local entities = ecs.getEntities() 
   table.sort(entities, function(a, b)
     if a.zIndex < b.zIndex then
       local temp = b.index
@@ -132,14 +133,14 @@ function love.draw()
   love.graphics.setCanvas(nil)
   love.graphics.translate(vx, vy)
   
-  local x, y, scale = core.viewport.getScreenTransform()
+  local x, y, scale = viewport.getScreenTransform()
 
-  local screenWidth, screenHeight = core.viewport.getScreenSize()
+  local screenWidth, screenHeight = viewport.getScreenSize()
   local quad = love.graphics.newQuad(
-    core.frac(core.viewport.camerax), core.frac(core.viewport.cameray),
+    core.frac(viewport.camerax), core.frac(viewport.cameray),
     screenWidth, screenHeight,
-    core.viewport.canvas:getWidth(), core.viewport.canvas:getHeight())
-  love.graphics.draw(core.viewport.canvas, quad, x, y, 0, scale)
+    viewport.canvas:getWidth(), viewport.canvas:getHeight())
+  love.graphics.draw(viewport.canvas, quad, x, y, 0, scale)
 end
 
 return core

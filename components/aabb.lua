@@ -1,6 +1,4 @@
 local path = (...):gsub("components.aabb$", "")
-local ecs = require(path .. "ecs")
-local collision = require(path .. "collisions")
 
 local aabb = {
   offsetx=0,
@@ -9,7 +7,7 @@ local aabb = {
   height=16,
 }
 
-if collision.drawCollisions then 
+if collisions.drawCollisions then 
   function aabb:init()
     self.entity:setZIndex(math.huge)
   end
@@ -44,7 +42,7 @@ function aabb:collidesWith(other)
   local otherTransform = other:getComponent("transform")
   local otherAabb = other:getComponent("aabb")
 
-  return collision.isCollidingAabb(
+  return collisions.isCollidingAabb(
     transform.x + self.offsetx, transform.y + self.offsety, 
     self.width, self.height,
     otherTransform.x + otherAabb.offsetx, otherTransform.y + otherAabb.offsety, 
@@ -56,7 +54,7 @@ function aabb:collidesOnX(other)
   local otherTransform = other:getComponent("transform")
   local otherAabb = other:getComponent("aabb")
 
-  return collision.isCollidingAabbX(
+  return collisions.isCollidingAabbX(
     transform.x, self.width,
     otherTransform.x, otherAabb.width)
 end
@@ -66,7 +64,7 @@ function aabb:collidesOnY(other)
   local otherTransform = other:getComponent("transform")
   local otherAabb = other:getComponent("aabb")
 
-  return collision.isCollidingAabbX(
+  return collisions.isCollidingAabbX(
     transform.y, self.height,
     otherTransform.y, otherAabb.height)
 end

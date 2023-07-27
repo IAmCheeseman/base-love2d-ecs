@@ -1,6 +1,4 @@
 local path = (...):gsub("components.movement$", "")
-local ecs = require(path .. "ecs")
-local time = require(path .. "time")
 
 local movement = {
   previousx=0,

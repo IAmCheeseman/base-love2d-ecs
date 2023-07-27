@@ -1,4 +1,3 @@
-local path = (...):gsub("tiled.tileset$", "")
 local tileset = {}
 
 local tiles = {}

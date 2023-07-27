@@ -1,7 +1,5 @@
 local path = (...):gsub("components.areacollision$", "")
-local ecs = require(path .. "ecs")
-local collisions = require(path .. "collisions")
-local Event = require(path .. "event")
+local Event = require(path .. ".event")
 
 local areaCollision = {
   layer="env",

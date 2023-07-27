@@ -1,6 +1,4 @@
 local path = (...):gsub("components.staticcollision$", "")
-local ecs = require(path .. "ecs")
-local collisions = require(path .. "collisions")
 
 local staticCollision = {
   layer="env"

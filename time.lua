@@ -1,5 +1,5 @@
 local path = (...):gsub("time$", "")
-local Event = require(path .. "event")
+local Event = require(path .. ".event")
 
 local time = {}
 

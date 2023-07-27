@@ -1,7 +1,7 @@
 local path = (...):gsub("ecs$", "")
-local utils = require(path .. "utils")
-local Queue = require(path .. "queue")
-local Event = require(path .. "event")
+local utils = require(path .. ".utils")
+local Queue = require(path .. ".queue")
+local Event = require(path .. ".event")
 
 local ecs = {
   entityAdded=Event(),

@@ -1,7 +1,5 @@
 local path = (...):gsub("components.softcollision$", "")
-local ecs = require(path .. "ecs")
-local vector = require(path .. "vector")
-local Group = require(path .. "group")
+local Group = require(path .. ".group")
 
 local softCollision = {
   radius=4,

@@ -1,6 +1,6 @@
 local path = (...):gsub("group$", "")
-local ecs = require(path .. "ecs")
-local utils = require(path .. "utils")
+local ecs = require(path .. ".ecs")
+local utils = require(path .. ".utils")
 
 -- Adds an entity to a group, if it has all the required components.
 local function addEntity(group, entity)

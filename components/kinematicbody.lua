@@ -1,7 +1,4 @@
 local path = (...):gsub("components.kinematicbody$", "")
-local ecs = require(path .. "ecs")
-local collisions = require(path .. "collisions")
-
 
 local kinematicBody = {
   layer="env",

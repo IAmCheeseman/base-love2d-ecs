@@ -1,6 +1,4 @@
 local path = (...):gsub("components.transform$", "")
-local ecs = require(path .. "ecs")
-local viewport = require(path .. "viewport")
 
 local transform = {
   x=0,

@@ -1,6 +1,5 @@
 local path = (...):gsub("components.animatedsprite$", "")
-local ecs = require(path .. "ecs")
-local Animation = require(path .. "animation")
+local Animation = require(path .. ".animation")
 
 local animatedSprite = {
   path="SetYourPath",
