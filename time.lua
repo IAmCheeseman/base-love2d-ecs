@@ -44,6 +44,12 @@ local function timerUpdate(timer)
   end
 end
 
+--- Stops a timer
+---@param timer table
+local function timerStop(timer)
+  timer.isStopped = true
+end
+
 --- Creates a timer with a default wait time of `time`.
 ---@param time? number = 1
 function time.Timer(time)
@@ -51,6 +57,7 @@ function time.Timer(time)
   return {
     update=timerUpdate,
     start=timerStart,
+    stop=timerStop,
 
     timeLeft=0,
     waitTime=time,
