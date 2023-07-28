@@ -42,6 +42,7 @@ require(path .. ".components.staticcollision")
 require(path .. ".components.kinematicbody")
 require(path .. ".components.areacollision")
 require(path .. ".components.aabb")
+core.backgroundColor = { 0, 0, 0 }
 
 core.keyPressed = Event()
 core.keyReleased = Event()
@@ -103,7 +104,7 @@ end
 
 function love.draw()
   love.graphics.setCanvas(viewport.canvas)
-  love.graphics.clear(0, 0, 0)
+  love.graphics.clear(unpack(core.backgroundColor))
   
   local vx, vy = viewport.getViewportPosition()
   vx = math.floor(vx)
