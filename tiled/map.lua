@@ -2,6 +2,7 @@ local path = (...):gsub("tiled.map$", "")
 local tileset = require(path .. ".tiled.tileset")
 
 local constructors = {}
+local mapCollisions = {}
 
 local function getLuaFile(path, assetsDirectory)
   return assetsDirectory .. "." .. path:gsub(".tsx$", ""):gsub("/", ".")
@@ -14,10 +15,12 @@ end
 local tileLayer = {
   width=0,
   height=0,
+  tintColor={ 1, 1, 1 },
   tiles={},
 }
 
 function tileLayer:draw(entity)
+  love.graphics.setColor(unpack(self.tintColor))
   for x=0, self.width - 1 do
     for y=0, self.height - 1 do
       local index = positionToIndex(x, y, self.width)
@@ -74,6 +77,11 @@ local neighborDirections = {
   {  0, -1 },
   {  1,  0 },
   { -1,  0 },
+
+  {  1,  1 },
+  {  1, -1 },
+  { -1, -1 },
+  { -1,  1 },
 }
 
 local function isNeighboringEmptyTile(x, y, data)
@@ -96,16 +104,37 @@ local function generateCollisions(data, tileWidth, tileHeight)
     for y=0, data.height - 1 do
       local index = positionToIndex(x, y, data.width)
       local tile = data.data[index]
+      local collision = mapCollisions[data.name]
+      local shouldCollide = false
 
-      -- Checking if this tile is an edge tile
-      if edgeTiles[tile] == nil and tile ~= 0 then        
+      local cx, cy = x * tileWidth, y * tileHeight
+      local cw, ch = tileWidth, tileHeight
+
+      if collision ~= nil then
+        local tileCollision = collision[tile]
+        shouldCollide = tileCollision ~= 0 and tile ~= 0
+        if tileCollision == 2 then -- Top Only
+          ch = tileHeight / 2
+        elseif tileCollision == 3 then -- Bottom Only
+          ch = tileHeight / 2
+          cy = cy + tileHeight - tileHeight / 2
+        elseif tileCollision == 4 then -- Left Only
+          cw = tileWidth / 2
+        elseif tileCollision == 5 then -- Right Only
+          cw = tileWidth / 2
+          cx = cx + tileWidth - tileWidth / 2
+        end
+      elseif edgeTiles[tile] == nil and tile ~= 0 then        
         edgeTiles[tile] = isNeighboringEmptyTile(x, y, data)
+        shouldCollide = edgeTiles[tile]
+      else
+        shouldCollide = edgeTiles[tile]
       end
 
-      if edgeTiles[tile] then
+      if shouldCollide then
         ecs.newEntity()
-          :add("transform", { x=x*tileWidth, y=y*tileHeight })
-          :add("aabb", { width=tileWidth, height=tileHeight })
+          :add("transform", { x=cx, y=cy })
+          :add("aabb", { width=cw, height=ch })
           :add("staticCollision")
           :spawn()
       end
@@ -134,8 +163,16 @@ function map.load(data, assetsDirectory)
         generateCollisions(layer, data.tilewidth, data.tileheight)
       end
 
+      local tintColor = layer.tintcolor
+        and { layer.tintcolor[1]/255, layer.tintcolor[2]/255, layer.tintcolor[3]/255 }
+        or { 1, 1, 1 }
+
       ecs.newEntity()
-        :add("tileLayer", { width=layer.width, height=layer.height, tiles=layer.data })
+        :add("tileLayer", { 
+          width=layer.width, height=layer.height, 
+          tiles=layer.data,
+          tintColor=tintColor 
+        })
         :setZIndex(zIndex or -1)
         :spawn()
     elseif layer.type == "objectgroup" then
@@ -171,6 +208,10 @@ function map.callConstructor(name, object)
   end
   constructors[name](object)
     :spawn()
+end
+
+function map.addCollisionMap(tileset, collisions)
+  mapCollisions[tileset] = collisions
 end
 
 return map
